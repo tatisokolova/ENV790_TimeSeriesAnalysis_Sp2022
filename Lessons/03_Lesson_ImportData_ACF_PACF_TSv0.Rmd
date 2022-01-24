@@ -3,12 +3,14 @@ title: "Import Data - ACF - PACF"
 author: "Luana Lima"
 date: "1/19/2022"
 output: pdf_document
+editor_options: 
+  chunk_output_type: inline
 ---
 
 ## Setting R code chunk options
 
 The first R code chunk is named **setup**. Here we are setting the options for R code chunks. The choice echo=TRUE means both code and output will appear on report. If for a specific chunk you want different options, you can always change that on the first line as we did in the following chunk. We chose include=FALSE which means that nothing related to this chunk (code and output) will appear on the knitted file.
-
+instal
 ```{r setup, include=FALSE} 
 knitr::opts_chunk$set(echo = TRUE) 
 ```
@@ -20,7 +22,6 @@ It's useful to designate one code chunk to load packages on the beginning of the
 ```{r package, include=FALSE}
 library(lubridate)
 library(ggplot2)
-
 ```
 
 ## Importing data
@@ -35,7 +36,19 @@ For this first example we will import water inflow data for reservoirs in Brazil
 ```{r}
 #Importing time series data from text file
 #I am calling it raw for now because it's data as it is in the file
+
+#Option 1: import using absolute path
+#sharing with other people becomes more difficult
 raw_inflow_data <- read.table(file="/Users/Tatiana/OneDrive - Duke University/ENV 790 Time Series/ENV790_TimeSeriesAnalysis_Sp2022/Data/inflowtimeseries.txt",header=FALSE,skip=0)
+
+#Option 2: import using shortcut "." or ".." or relative path aka BEST PATHclass
+# the "." will point to the folder set as the current directory
+# the ".." will point to your parent folder set as the current directory
+
+#check which folder is your current directory using function getwd()
+getwd()
+
+raw_inflow_data <-read.table(file="../Data/inflowtimeseries.txt",header=FALSE,skip=0)
 
 #If you want specific columns just trim the table
 raw_inflow_data <- raw_inflow_data[,1:5] #the space before the comma means you want all rows
@@ -62,6 +75,11 @@ head(my_date)
 #add that to inflow_data 
 inflow_data <- cbind(my_date,raw_inflow_data[,3:5])
 head(inflow_data)
+format(my_date[1],format="%Y-%b-%d")
+#%Y = 4 digits
+#%y = 2 digits
+#%m = numeric month
+#%b = written out month
 
 ```
 
@@ -75,7 +93,6 @@ plot(inflow_data[,"HP1"]) # note that this do not generate a nice plot
 
 plot(inflow_data[,"HP1"],type="l") #The type "l" tells you want a line plot check help(plot) 
                                   #for other types of plots
-
 plot(inflow_data[,"HP1"],type="l",col="blue") #Change the color of the series
 plot(inflow_data[,"HP1"],type="l",col="blue",ylab="Inflow [m3/s]") 
 plot(inflow_data[,"HP1"],type="l",col="blue",ylab="Inflow [m3/s]",main="Historical Inflow Data for HP1") 
@@ -113,7 +130,7 @@ plot(inflow_data[,"HP1"],inflow_data[,"HP2"])
 We could improve the plots generated in the previous sections using another package *ggplot2*. Package ggplot2 offers better looking plots, additional fucntionalities, easy incorporation of the date labels, legends, etc.  Let's see how we would reproduce the plots from the previous section with ggplot2.
 
 ```{r}
-#using package ggplot2
+#using package ggplot2, aes stands for aesthetic
 ggplot(inflow_data, aes(x=my_date, y=HP1)) +
             geom_line(color="blue")
 
