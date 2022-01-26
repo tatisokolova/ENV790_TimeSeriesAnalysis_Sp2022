@@ -24,6 +24,8 @@ R packages needed for this assignment:"forecast","tseries", and "dplyr". Install
 library(forecast)
 library(tseries)
 library(dplyr)
+library(xlsx)
+library(readxl)
 ```
 
 ## Data set information  
@@ -32,7 +34,11 @@ Consider the data provided in the spreadsheet "Table_10.1_Renewable_Energy_Produ
 
 ```{r}
 #Importing data set
-raw_data <- read.table(file="../Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx",header=FALSE,skip=0)
+energy_data <- read.xlsx(file="../Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx",header=FALSE, startRow=13, sheetIndex=1)
+#extracting column names from row 11
+read_col_names <- read.xlsx(file="../Data/Table_10.1_Renewable_Energy_Production_and_Consumption_by_Source.xlsx",header=FALSE,startRow=11,endRow=11,sheetIndex=1)
+colnames(energy_data) <- read_col_names
+head(energy_data)
 
 ```
 
@@ -41,6 +47,8 @@ raw_data <- read.table(file="../Data/Table_10.1_Renewable_Energy_Production_and_
 You will work only with the following columns: Total Biomass Energy Production, Total Renewable Energy Production, Hydroelectric Power Consumption. Create a data frame structure with these three time series only. Use the command head() to verify your data.
 
 ```{r}
+df <- energy_data[,c('Total Biomass Energy Production', 'Total Renewable Energy Production','Hydroelectric Power Consumption')]
+head(df)
 
 ```
 
@@ -49,7 +57,8 @@ You will work only with the following columns: Total Biomass Energy Production, 
 Transform your data frame in a time series object and specify the starting point and frequency of the time series using the function ts().
 
 ```{r}
-
+ts_energy_data <- ts(data=df, start=1,end=585,frequency=1)
+ts_energy_data
 ```
 
 
@@ -57,7 +66,13 @@ Transform your data frame in a time series object and specify the starting point
 Compute mean and standard deviation for these three series.
 
 ```{r}
+mean(df$'Total Biomass Energy Production')
+mean(df$'Total Renewable Energy Production')
+mean(df$'Hydroelectric Power Consumption')
 
+sd(df$'Total Biomass Energy Production')
+sd(df$'Total Renewable Energy Production')
+sd(df$'Hydroelectric Power Consumption')
 ```
 
 
@@ -65,7 +80,13 @@ Compute mean and standard deviation for these three series.
 Display and interpret the time series plot for each of these variables. Try to make your plot as informative as possible by writing titles, labels, etc. For each plot add a horizontal line at the mean of each series in a different color.
 
 ```{r}
+plot(df[,"Hydroelectric Power Consumption"],type="l",col="blue",ylab="Energy Production (Trillion Btu)",ylim=c(0,1100)) 
+lines(df[,"Total Biomass Energy Production"],col="red") 
+lines(df[,"Total Renewable Energy Production"],col="green") 
+title(main="Renewable Energy Production and Consumption by Source")
 
+#legend
+legend("topleft",legend=c("Hydroelectric Power Consumption","Total Biomass Energy Production","Total Renewable Energy Production"), lty=c("solid","solid","solid"),col=c("blue","red","green"))
 ```
 
 

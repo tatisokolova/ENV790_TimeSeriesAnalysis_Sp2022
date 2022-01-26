@@ -43,7 +43,7 @@ For this first example we will import water inflow data for reservoirs in Brazil
 #I am calling it raw for now because it's data as it is in the file
 
 #Option 1: import using absolute path
-<<<<<<< HEAD:Lessons/03_Lesson_ImportData_ACF_PACF_TSv0.Rmd
+
 #sharing with other people becomes more difficult
 raw_inflow_data <- read.table(file="/Users/Tatiana/OneDrive - Duke University/ENV 790 Time Series/ENV790_TimeSeriesAnalysis_Sp2022/Data/inflowtimeseries.txt",header=FALSE,skip=0)
 
@@ -58,9 +58,9 @@ raw_inflow_data <-read.table(file="../Data/inflowtimeseries.txt",header=FALSE,sk
 
 #Option 1: import using path
 raw_inflow_data <- read.table(file="/Users/lmm89/OneDrive/Duke_University/9_Spring2022/ENV790_TSA/Git_Repo/ENV790_TimeSeriesAnalysis_Sp2022_v2/Data/inflowtimeseries.txt",header=FALSE,skip=0)
-=======
+
 #raw_inflow_data <- read.table(file="/Users/lmm89/OneDrive/Duke_University/9_Spring2022/ENV790_TSA/Git_Repo/ENV790_TimeSeriesAnalysis_Sp2022_v2/Data/inflowtimeseries.txt",header=FALSE,skip=0)
->>>>>>> 096f2e2b7bd34a4e0634b0adefe193f4e2d827eb:Lessons/03_Lesson_ImportData_ACF_PACF.Rmd
+
 
 #Option 2: import using shortcut "." or ".." or relative path
 # the "." will point to the folder set as current directory
@@ -98,18 +98,16 @@ head(my_date)
 #add that to inflow_data 
 inflow_data <- cbind(my_date,raw_inflow_data[,3:5])
 head(inflow_data)
-<<<<<<< HEAD:Lessons/03_Lesson_ImportData_ACF_PACF_TSv0.Rmd
+
 format(my_date[1],format="%Y-%b-%d")
 #%Y = 4 digits
 #%y = 2 digits
 #%m = numeric month
 #%b = written out month
-=======
+
 format(my_date[1],format="%y-%m")
 format(my_date[1],format="%Y-%m")
 format(my_date[1],format="%Y-%b")
-
->>>>>>> 096f2e2b7bd34a4e0634b0adefe193f4e2d827eb:Lessons/03_Lesson_ImportData_ACF_PACF.Rmd
 
 ```
 
