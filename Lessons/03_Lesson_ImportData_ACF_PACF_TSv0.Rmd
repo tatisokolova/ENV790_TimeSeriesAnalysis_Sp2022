@@ -38,7 +38,6 @@ For this first example we will import water inflow data for reservoirs in Brazil
 #Importing time series data from text file
 #I am calling it raw for now because it's data as it is in the file
 
-<<<<<<< HEAD:Lessons/03_Lesson_ImportData_ACF_PACF_TSv0.Rmd
 #Option 1: import using absolute path
 #sharing with other people becomes more difficult
 raw_inflow_data <- read.table(file="/Users/Tatiana/OneDrive - Duke University/ENV 790 Time Series/ENV790_TimeSeriesAnalysis_Sp2022/Data/inflowtimeseries.txt",header=FALSE,skip=0)
@@ -51,10 +50,9 @@ raw_inflow_data <- read.table(file="/Users/Tatiana/OneDrive - Duke University/EN
 getwd()
 
 raw_inflow_data <-read.table(file="../Data/inflowtimeseries.txt",header=FALSE,skip=0)
-=======
+
 #Option 1: import using path
 raw_inflow_data <- read.table(file="/Users/lmm89/OneDrive/Duke_University/9_Spring2022/ENV790_TSA/Git_Repo/ENV790_TimeSeriesAnalysis_Sp2022_v2/Data/inflowtimeseries.txt",header=FALSE,skip=0)
->>>>>>> 8b135a93d8d57f27b92bc45ac221d03c82d0c271:Lessons/03_Lesson_ImportData_ACF_PACF.Rmd
 
 #Option 2: import using shortcut "." or ".."
 # the "." will point to the folder set as current directory
