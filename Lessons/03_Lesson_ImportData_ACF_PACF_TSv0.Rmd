@@ -178,6 +178,7 @@ Many of the functions we will use require a time series object. You can transfor
 ts_inflow_data <- ts(inflow_data[,2:(2+nhydro-1)]) #note that we are only transforming columns with inflow data, not the date columns
 ts_inflow_data
 #plot(ts_inflow_data[,1])
+#ts.plot also plots time series data
 ```
 
 Note that ts_inflow_data has information on start, end and frequency. We will discuss frequency in future lectures, for now let's just keep the default value for frequency which is 1.
@@ -195,6 +196,7 @@ HP1_pacf=pacf(ts_inflow_data[,1],lag.max=60, plot=TRUE)
 #Option 2: Computing ACF and PACF with package "forecast"
 
 #The next line will output a plot since we have plot=TRUE and also store the acf values in the object
+#capital A is 1, lowercase is 0
 HP1_acf=Acf(ts_inflow_data[,1],lag.max=60, type="correlation", plot=TRUE)
 
 HP1_pacf=Pacf(ts_inflow_data[,1],lag.max=60, plot=TRUE)
