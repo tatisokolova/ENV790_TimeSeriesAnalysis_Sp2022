@@ -27,7 +27,7 @@ Second R code chunk is for loading packages. By setting message = FALSE, the cod
 library(lubridate)
 library(ggplot2)
 library(forecast)
-library(Kendall)
+library(Kendall) #pearson is regular correlation (high school), spearman is similar to kendall but works with non-linear relationships, kendall is monotic as well as spearman but less affected by outliers
 library(tseries)
 
 ```
