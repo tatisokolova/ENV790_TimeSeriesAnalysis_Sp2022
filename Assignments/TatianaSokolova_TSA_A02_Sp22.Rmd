@@ -63,8 +63,8 @@ head(df)
 Transform your data frame in a time series object and specify the starting point and frequency of the time series using the function ts().
 
 ```{r}
-ts_energy_data <- ts(data=df, start=1,end=585,frequency=1)
-#ts_energy_data
+ts_energy_data <a- ts(data=df, start=1,end=585,frequency=1)
+ts_energy_data
 #not running the above because it takes up a bunch of pages
 ```
 

@@ -4,7 +4,7 @@ author: "Luana Lima"
 date: "01/26/2022"
 output: pdf_document
 editor_options: 
-  chunk_output_type: console
+  chunk_output_type: inline
 ---
 
 ## Setting R code chunk options
