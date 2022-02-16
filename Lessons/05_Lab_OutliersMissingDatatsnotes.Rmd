@@ -146,6 +146,8 @@ The way that decompose is fixing the data and is subtracting end points of the d
 ```{r}
 
 #Ex5: Try to reproduce the trend component from decompose().
+order<-6
+
 
 #Ex6: Try to reproduce the seasonal component from decompose().
 
