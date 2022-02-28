@@ -1,10 +1,12 @@
 ---
 title: "ENV 790.30 - Time Series Analysis for Energy Data | Spring 2022"
-subtitle: "Assignment 4 - Due date 02/17/22"
 author: "Tatiana Sokolova"
-output: pdf_document
+subtitle: Assignment 4 - Due date 02/17/22
+output:
+  word_document: default
+  pdf_document: default
 geometry: margin=2.54cm
-editor_options: 
+editor_options:
   chunk_output_type: inline
 ---
   
@@ -31,10 +33,12 @@ options(tinytex.verbose = TRUE)
 ```{r}
 library(xlsx)
 library(readxl)
+library(lubridate)
 library(ggplot2)
 library(forecast)
 library(tseries)
 library(Kendall)
+library(dplyr) 
 ```
 
 ## Questions 
@@ -50,9 +54,13 @@ read_col_names <- read.xlsx(file="../Data/Table_10.1_Renewable_Energy_Production
 colnames(energy_data) <- read_col_names
 head(energy_data)
 
-#creating df structure for column of interest
-df <- energy_data[,c('Total Renewable Energy Production')]
+#creating df structure for column of interest and 
+df <- energy_data[,c('Month','Total Renewable Energy Production')]
 head(df)
+
+#removing January 1973 to compare with differenced df
+df_584<-df[-c(1),]
+head(df_584)
 ```
 
 
@@ -65,11 +73,24 @@ Difference the "Total Renewable Energy Production" series using function diff().
 * *lag* integer indicating with lag to use;
 * *differences* integer indicating how many times series should be differenced.
 
-Try differencing at lag 1 only once, i.e., make `lag=1` and `differences=1`. Plot the differenced series Do the series still seem to have trend?
+Try differencing at lag 1 only once, i.e., make `lag=1` and `differences=1`. Plot the differenced series. Do the series still seem to have trend?
 
 ```{r}
-diff()
+energy_data_diff <- diff(df[,"Total Renewable Energy Production"],lag=1, differences=1)
+
+ggplot(df_584, aes(x=df_584[,1], y=df_584[,"Total Renewable Energy Production"])) +
+  geom_line(aes(x=df_584[,1], y = energy_data_diff, color = "Differenced")) +
+  geom_line(aes(x=df_584[,1], y=df_584[,"Total Renewable Energy Production"], color = "Original")) +
+  labs(color="") +
+  scale_color_manual(values = c("Differenced" = "green", "Original" = "black"),
+                                labels=c("Differenced", "Original")) +
+  theme(legend.position = "bottom") +
+  ggtitle("Total Renewable Energy Production")+
+  ylab(paste0("Energy Production (Trillion Btu)")) +
+  xlab(paste0("Month"))
+      
 ```
+The series appears to be detrended.
 
 ### Q2
 
@@ -78,16 +99,34 @@ Now let's compare the differenced series with the detrended series you calculate
 Copy and paste part of your code for A3 where you compute regression for Total Energy Production and the detrended Total Energy Production
 
 ```{r}
+#Create vector t
+nobs=nrow(df)
+t <- c(1:nobs)
+
+#Fit a linear trend to TS of Total Renewable Energy Production
+linear_trend_model_renew=lm(df[,2]~t)  
+summary(linear_trend_model_renew)
+beta0r=as.numeric(linear_trend_model_renew$coefficients[1])  #first coefficient is the intercept term or beta0
+beta1r=as.numeric(linear_trend_model_renew$coefficients[2])  #second coefficient is the slope or beta1
+
+#remove the trend from TS of Total Renewable Energy Production
+detrend_renew_data <- df[,2]-(beta0r+beta1r*t)
 
 ```
 
 ### Q3
-Create a data frame with 4 columns: month, original series, detrended by Regression Series and differenced series. Make sure you properly name all columns. Also note that the differenced series will have only 584 rows because you loose the first observation when differencing. Therefore, you need to remove the first observations for the original series and the detrended by regression series to build the new data frame.
+Create a data frame with 4 columns: month, original series, detrended by Regression Series and differenced series. Make sure you properly name all columns. Also note that the differenced series will have only 584 rows because you lose the first observation when differencing. Therefore, you need to remove the first observations for the original series and the detrended by regression series to build the new data frame.
 
 ```{r}
-#Data frame - remember to not include January 1973
+#removing Jan 1973 from detrended data
+detrend_renew_data <- detrend_renew_data[-1]
+head(detrend_renew_data)
 
-
+new_df <- data.frame(Month = df_584$Month,
+                             Original = df_584[,2],
+                             Detrended = detrend_renew_data, 
+                             Differenced = energy_data_diff)
+head(new_df)
 ```
 
 ### Q4
@@ -95,7 +134,18 @@ Using ggplot() create a line plot that shows the three series together. Make sur
 
 ```{r}
 #Use ggplot
-
+ggplot(new_df, aes(x=new_df[,1], y=new_df[,2])) +
+  geom_line(aes(x=new_df[,1], y= new_df[,2], color = "Original")) +
+  geom_line(aes(x=new_df[,1], y = new_df[,3], color = "Detrended")) +
+  geom_line(aes(x=new_df[,1], y= new_df[,4], color = "Differenced")) +
+  labs(color="") +
+  scale_color_manual(values = c("Original" = "black","Detrended" = "blue","Differenced" = "green"),
+                                labels=c("Original", "Detrended", "Differenced")) +
+  theme(legend.position = "bottom") +
+  ggtitle("Total Renewable Energy Production")+
+  ylab(paste0("Energy Production (Trillion Btu)")) +
+  xlab(paste0("Month"))
+      
 ```
 
 
@@ -103,31 +153,74 @@ Using ggplot() create a line plot that shows the three series together. Make sur
 Plot the ACF for the three series and compare the plots. Add the argument `ylim=c(-0.5,1)` to the Acf() function to make sure all three y axis have the same limits. Which method do you think was more efficient in eliminating the trend? The linear regression or differencing?
 
 ```{r}
-#Compare ACFs
-
+#Comparing ACFs
+par(mar=c(3,3,3,0));par(mfrow=c(1,3))
+Acf(new_df$Original,lag.max=60,main="Original",ylim=c(-0.5,1))
+Acf(new_df$Detrended,lag.max=60,main="Detrended",ylim=c(-0.5,1))
+Acf(new_df$Differenced,lag.max=60,main="Differenced",ylim=c(-0.5,1))
 ```
 
+The differencing was more efficient in eliminating the trend.
 
 ### Q6
-Compute the Seasonal Mann-Kendall and ADF Test for the original "Total Renewable Energy Production" series. Ask R to print the results. Interpret the results for both test. Whats the conclusion from the Seasonal Mann Kendall test? What's the conclusion for the ADF test? Do they match what you observed in Q2? Recall that having a unit root means the series has a stochastic trend. And when a series has stochastic trend we need to use a different procedure to remove the trend.
+Compute the Seasonal Mann-Kendall and ADF Test for the original "Total Renewable Energy Production" series. Ask R to print the results. Interpret the results for both tests. What's the conclusion from the Seasonal Mann Kendall test? What's the conclusion for the ADF test? Do they match what you observed in Q2? Recall that having a unit root means the series has a stochastic trend. And when a series has stochastic trend we need to use a different procedure to remove the trend.
 
 ```{r}
+#converting to time series
+ts_renew_energy <- ts(df[,2],frequency=12)
+
+#Seasonal Mann-Kendall
+SMKtest <- SeasonalMannKendall(ts_renew_energy)
+print("Results for Seasonal Mann Kendall")
+print(summary(SMKtest)) 
 
 ```
+The p value is sharing how significant the tau value is and it definitely statistically different from 0 so the null hypothesis that there is no trend present in the data should be rejected. The larger score indicates that it is a positive trend. This matches what I observed in Q2.
+
+```{r}
+#Null hypothesis is that data has a unit root
+print("Results for ADF test")
+print(adf.test(ts_renew_energy,alternative = "stationary")) #stationary over a unit root but could be non stationary 
+
+```
+From the ADF test, since the p-value is greater than 0.05, we can conclude that we fail to reject the null hypothesis that the time series is non-stationary and can therefore conclude the time series has some time-dependent structure and does not have a constant variance over time. This matches what I observed in Q2.
 
 ### Q7
 
 Aggregate the original "Total Renewable Energy Production" series by year. You can use the same procedure we used in class. Store series in a matrix where rows represent months and columns represent years. And then take the columns mean using function colMeans(). Recall the goal is the remove the seasonal variation from the series to check for trend. 
 
 ```{r}
+energy_data_matrix <- matrix(df[,2],byrow=FALSE,nrow=12)
+energy_data_yearly <- colMeans(energy_data_matrix)
 
+#for Spearman test
+my_year <- c(year(first(df[,1])):year(last(df[,1])))
+head(my_year)
 ```
 
 ### Q8
 
-Apply the Mann Kendal, Spearman correlation rank test and ADF. Are the results from the test in agreement with the test results for the non-aggregated series, i.e., results for Q6?
+Apply the Mann-Kendall, Spearman correlation rank test, and ADF. Are the results from the test in agreement with the test results for the non-aggregated series, i.e., results for Q6?
 
 ```{r}
+#Mann-Kendall
+print("Results of Mann Kendall on average yearly series")
+print(summary(MannKendall(energy_data_yearly)))
 
 ```
+The p-value is still statistically different from 0 so the rejection of the null hypothesis (there is no trend present in the data) still holds. Tau is slightly bigger than that of the non-aggregated series, implying that there is an even stronger positive correlation within this aggregated series.
 
+```{r}
+#Spearman Correlation Test
+print("Results from Spearman Correlation")
+sp_rho=cor.test(energy_data_yearly,my_year,method="spearman") 
+print(sp_rho)
+```
+Question 6 did not require the Spearman test because it cannot handle seasonality. The p-value for the test on the yearly data indicates that there is very strong evidence for rejecting the null hypothesis that there is no monotonic association in the series. The rho indicates that there is a strong positive correlation within this aggregated series.
+
+```{r}
+#Augmented Dickey-Fuller Test
+print("Results for ADF test on yearly data")
+print(adf.test(energy_data_yearly, alternative = "stationary"))
+```
+The p-value is still greater than 0.05 and therefore we can continue to conclude that the time series is stationary. The Dickey-Fuller value is more negative than that of the non-aggregated series, implying that there is an even stronger rejection of the null hypothesis.

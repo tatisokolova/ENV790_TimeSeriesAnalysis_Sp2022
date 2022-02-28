@@ -1,8 +1,10 @@
 ---
-title: "Lab 5: Outliers and Missing Data"
+title: 'Lab 5: Outliers and Missing Data'
 author: "Luana Lima"
 date: "02/17/2022"
-output: pdf_document
+output:
+  word_document: default
+  pdf_document: default
 ---
 
 ## Objectives
