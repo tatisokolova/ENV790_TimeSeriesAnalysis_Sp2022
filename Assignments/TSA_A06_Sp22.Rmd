@@ -1,7 +1,7 @@
 ---
 title: "ENV 790.30 - Time Series Analysis for Energy Data | Spring 2021"
 subtitle: "Assignment 6 - Due date 03/16/22"
-author: "Student Name"
+author: "Tatiana Sokolova"
 output: pdf_document
 geometry: margin=2.54cm
 header-includes:
@@ -24,9 +24,11 @@ This assignment has general questions about ARIMA Models.
 
 Packages needed for this assignment: "forecast","tseries". Do not forget to load them before running your script, since they are NOT default packages.\\
 
-```{r}
+```{r package, message=FALSE}
 #Load/install required package here
-
+library(forecast)  
+library(tseries)
+library(sarima)
 ```
 
 
@@ -37,11 +39,11 @@ Describe the important characteristics of the sample autocorrelation function (A
 
 \item AR(2)
 
-> Answer: 
+> Answer: For the autoregressive process, the ACF would tail off, showing a slow decay. The PACF, on the other hand, would cut off. Since the auto-regressive process is forecasting two steps ahead of time (two-period forecast), 
 
 \item MA(1)
 
-> Answer: 
+> Answer: For the moving average process, the ACF would cut off. The PACF would then show a tailing off, or decay slowly. Since the moving average process is forecasting only 1 step ahead of time (one-period forecast),
 
 \end{enumerate}
 
@@ -49,13 +51,23 @@ Describe the important characteristics of the sample autocorrelation function (A
 Recall that the non-seasonal ARIMA is described by three parameters ARIMA$(p,d,q)$ where $p$ is the order of the autoregressive component, $d$ is the number of times the series need to be differenced to obtain stationarity and $q$ is the order of the moving average component. If we don't need to difference the series, we don't need to specify the "I" part and we can use the short version, i.e., the ARMA$(p,q)$. Consider three models: ARMA(1,0), ARMA(0,1) and ARMA(1,1) with parameters $\phi=0.6$ and $\theta= 0.9$. The $\phi$ refers to the AR coefficient and the $\theta$ refers to the MA coefficient. Use R to generate $n=100$ observations from each of these three models
 
 ```{r}
+obs=100
+AR <- arima.sim(list(order= c(1,0,0), ar = 0.6), n=obs) 
+MA <- arima.sim(list(order= c(0,0,1), ma = 0.9), n=obs)
+ARMA <- arima.sim(list(order= c(1,0,1), ar = 0.6, ma = 0.9), n=obs)
 
+#confirming proper creation
+
+par(mar=c(3,3,3,0));par(mfrow=c(1,3))
+plot(AR, main = "AR", xlab="Observation")
+plot(MA, main = "MA", xlab="Observation")
+plot(ARMA, main = "ARMA", xlab="Observation")
 ```
 
 
 \begin{enumerate}[label=(\alph*)]
 
-\item Plot the sample ACF for each of these models in one window to facilitate comparison (Hint: use command $par(mfrow=c(1,3))$ that divides the plotting window in three columns).  
+\item Plot the sample ACF for each of these models in one window to facilitate comparison (Hint: use command par(mfrow=c(1,3)) that divides the plotting window in three columns).  
 
 ```{r}
 
